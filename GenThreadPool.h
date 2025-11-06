@@ -1,4 +1,4 @@
-#ifndef GENTHREADPOOL_H
+﻿#ifndef GENTHREADPOOL_H
 #define GENTHREADPOOL_H
 
 
@@ -27,14 +27,14 @@ public:
         m_condi.notify_one();
     }
 
-//    void push(T&& value)
-//    {  // 添加右值引用版本
-//        {
-//            std::lock_guard<std::mutex> lock(m_lock);
-//            m_queue.push(value);
-//        }
-//        m_condi.notify_one();
-//    }
+    void push(T&& value)
+    {  // 添加右值引用版本
+        {
+            std::lock_guard<std::mutex> lock(m_lock);
+            m_queue.push(value);
+        }
+        m_condi.notify_one();
+    }
 
     bool pop(T& value)
     {
@@ -62,7 +62,7 @@ private:
     std::queue<T> m_queue;
     std::mutex m_lock;
     std::condition_variable m_condi;
-    int m_timeout;
+    std::chrono::milliseconds m_timeout;
 };
 
 template <typename T>
@@ -84,7 +84,7 @@ public:
     bool pop(T& value)
     {
         std::unique_lock<std::mutex> lock(m_consumeLock);
-        if(m_consumeQueue.empty() && swapQueue() == 0){
+        if(m_consumeQueue.empty() && swapQueue() == 0){ // 先m_consumeQueue.empty() 再 swapQueue()
             return false;
         }
 
@@ -119,7 +119,7 @@ private:
     std::mutex m_produceLock;
     std::mutex m_consumeLock;
     std::condition_variable m_condi;
-    int m_timeout;
+    std::chrono::milliseconds m_timeout;
 };
 
 class GenThreadPool

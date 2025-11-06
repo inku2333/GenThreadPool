@@ -1,7 +1,7 @@
 #ifndef GENCASQUEUE_H
 #define GENCASQUEUE_H
 
-#include <boost/lockfree/queue.hpp>
+#include <boost/lockfree/queue.hpp> // compare-and-swap queue
 #include <mutex>
 #include <condition_variable>
 #include <atomic>
@@ -129,7 +129,7 @@ private:
     std::condition_variable m_condi;
 
     // 超时时间（毫秒）
-    int m_timeout;
+    std::chrono::milliseconds m_timeout;
 };
 
 #endif // GENCASQUEUE_H
